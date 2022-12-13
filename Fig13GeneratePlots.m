@@ -1,7 +1,10 @@
 M = load('../data/raw/quantile/numbersteps50.011162.mat');
-N = load('../data/raw/quantile/meanConcenmeanSpots.mat');
+N = load('../data/raw/otsu/meanConcenmeanSpots.mat');
 S = load('../data/raw/quantile/meanConcenmeanSpots.mat');
-mRNA = M.N_all;
+
+
+dataSet = S;
+mRNA = dataSet.N_all;
 
 nonzero_ind = [];
 
@@ -140,15 +143,14 @@ data_bni1_all = [bni1_822; bni1_822pk; bni1_882pk; bni1_882; bni1_909pk; bni1_90
 data_whi3 = whi3_822pk;
 data_whi3_all = [whi3_822; whi3_822pk; whi3_882; whi3_882pk; whi3_909];
 
-data = data_bni1_all;
+data = data_cln3_all;
 hypha = data(:,2);
 numhypha = length(unique(hypha));
 %dataCV = M.CVsquared(data);
-dataNall = S.N_all(data);
+dataNall = dataSet.N_all(data);
 %dataEntropy = M.entropyballs(data);
 dataVol = M.spherevol(data);
-%dataconcen = M.meanconcens(data);
-dataSpot = S.meanSpotWeights(data);
+dataSpot = dataSet.meanSpotWeights(data);
 minNall = min(dataNall);
 maxNall = max(dataNall);
 meanCV = [];
@@ -183,32 +185,32 @@ thresh_opt = 0;
 [x,xorder] = sort(concens);
 y = meanSpot(xorder);
 
-for thresh = threshs
-    for slope = slopes
-        ftemp = double(x < thresh);
-        thresh_ind = sum(ftemp);
-        
-        for i = (thresh_ind+1):length(x)
-            ftemp(i) = 1+slope*log(x(i)/thresh);          
-            %ftemp(i) = 1+slope*(x(i)-thresh);
-
-        end
-        %plot(x,ftemp)
-        %hold on
-        
-        diff = norm(ftemp-y,1);
-        if diff < fdiff
-           slope_opt = slope;
-           thresh_opt = thresh;
-           fdiff = diff;
-           f = ftemp;
-        end
-        
-            
-    end    
-end
-plot(x,f)
-title(sprintf('Optimal threshold is %f mRNA', mean(dataVol(nonzeroVols,1))*thresh_opt))
+% for thresh = threshs
+%     for slope = slopes
+%         ftemp = double(x < thresh);
+%         thresh_ind = sum(ftemp);
+%         
+%         for i = (thresh_ind+1):length(x)
+%             ftemp(i) = 1+slope*log(x(i)/thresh);          
+%             %ftemp(i) = 1+slope*(x(i)-thresh);
+% 
+%         end
+%         %plot(x,ftemp)
+%         %hold on
+%         
+%         diff = norm(ftemp-y,1);
+%         if diff < fdiff
+%            slope_opt = slope;
+%            thresh_opt = thresh;
+%            fdiff = diff;
+%            f = ftemp;
+%         end
+%         
+%             
+%     end    
+% end
+% plot(x,f)
+% title(sprintf('Optimal threshold is %f mRNA', mean(dataVol(nonzeroVols,1))*thresh_opt))
 
 figure(4)
 set(groot,'defaultAxesTickLabelInterpreter','latex');  
@@ -219,10 +221,10 @@ binsc = 0.5*(bins(1:end-1)+bins(2:end));
 semilogx(binsc,medianspot,'LineWidth',2);
 hold on
 scatter(concens,meanSpot,3)
-title("BNI1 spot counts in 2.5 $\mu m$ nuclear neighborhoods",'interpreter','latex')
-xlabel("Number of RNA / Neighborhood volume",'interpreter','latex')
-ylabel("Mean spot size",'interpreter','latex')
-
+title("CLN3 RNA counts in 2.5 $\mu m$ nuclear neighborhoods",'interpreter','latex')
+xlabel("Number of RNA in neighborhood / neighborhood volume",'interpreter','latex')
+ylabel({"Mean number of RNA detected";  "per spot in neighborhood "},'interpreter','latex')
+ 
 % figure(4)
 % xtest = sort(concens);
 % ytest = ones(length(xtest),1);
